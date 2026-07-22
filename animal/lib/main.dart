@@ -1,96 +1,111 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:animal/models/scoring.dart';
-import './models/mockScoring.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const GuessingGameApp());
 }
 
-class MainApp extends StatelessWidget {
-  MainApp({super.key});
-
-  final Scoring mockData = MockScoring().mockScoringData();
+class GuessingGameApp extends StatelessWidget {
+  const GuessingGameApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Domino Scoreboard",
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("Domino Scoreboard"),
-          centerTitle: true,
-        ),
-        body: Column(
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const GamePage(),
+    );
+  }
+}
+
+class GamePage extends StatefulWidget {
+  const GamePage({super.key});
+
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _ThemeColors {
+  static const primary = Colors.blue;
+}
+
+class _GamePageState extends State<GamePage> {
+  final TextEditingController _controller = TextEditingController();
+  late int _targetNumber;
+  String _message = 'Guess a number between 1 and 100!';
+  int _attempts = 0;
+  bool _hasWon = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startNewGame();
+  }
+
+  void _startNewGame() {
+    setState(() {
+      _targetNumber = Random().nextInt(100) + 1;
+      _message = 'Guess a number between 1 and 100!';
+      _attempts = 0;
+      _hasWon = false;
+      _controller.clear();
+    });
+  }
+
+  void _checkGuess() {
+    final int? guess = int.tryParse(_controller.value.text);
+    if (guess == null) {
+      setState(() => _message = 'Please enter a valid number.');
+      return;
+    }
+
+    setState(() {
+      _attempts++;
+      if (guess == _targetNumber) {
+        _message = '🎉 Correct! You guessed it in $_attempts attempts.';
+        _hasWon = true;
+      } else if (guess < _targetNumber) {
+        _message = 'Too low! Try again.';
+      } else {
+        _message = 'Too high! Try again.';
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Simple Guessing Game')),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 15),
-
-            Image.asset(
-              "assets/images/Domino.webp",
-              height: 150,
-            ),
-
+            Text(_message, style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 20),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: scoreList(mockData),
+            if (!_hasWon) ...[
+              TextField(
+                controller: _controller,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter your guess',
+                ),
               ),
-            ),
-
-            const Divider(),
-
-            Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  Text(
-                    "Total Home Score: ${mockData.totalHomeScore}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "Total Away Score: ${mockData.totalAwayScore}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _checkGuess,
+                child: const Text('Submit Guess'),
               ),
-            )
+            ] else
+              ElevatedButton(
+                onPressed: _startNewGame,
+                style: ElevatedButton.styleFrom(backgroundColor: _ThemeColors.primary),
+                child: const Text('Play Again', style: TextStyle(color: Colors.white)),
+              ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget scoreList(Scoring scoreModel) {
-    List<Widget> myScoresList = [];
-
-    for (var entry in scoreModel.scores) {
-      myScoresList.add(
-        Card(
-          margin: const EdgeInsets.symmetric(vertical: 5),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text("Home: ${entry.home}"),
-                Text("Away: ${entry.away}"),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    return ListView(
-      children: myScoresList,
     );
   }
 }
