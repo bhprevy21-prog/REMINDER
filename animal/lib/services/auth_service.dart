@@ -21,13 +21,34 @@ class AuthService {
 
     } catch(e) {
 
-      print("Google Login Error: $e");
 
       return null;
 
     }
 
   }
+  Future<UserCredential?> createAccount(
+String email,
+String password
+) async {
+
+  try {
+
+    return await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+
+  } catch(e){
+
+
+    return null;
+
+  }
+
+}
 
 
   Future<void> signOut() async {
@@ -35,5 +56,31 @@ class AuthService {
     await _auth.signOut();
 
   }
+  Future<UserCredential?> signInEmail(
+String email,
+String password
+) async {
+
+
+  try {
+
+    return await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+
+          email: email,
+
+          password: password,
+
+        );
+
+
+  } catch(e){
+
+
+    return null;
+
+  }
+
+}
 
 }
