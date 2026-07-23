@@ -1,53 +1,81 @@
 import 'package:flutter/material.dart';
 
+import 'package:animal/models/userprofile.dart';
+
+
 class HomePage extends StatelessWidget {
 
-  final String username;
 
-  const HomePage({
-    super.key,
-    required this.username,
-  });
+  const HomePage({super.key});
+
+
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
+
 
     return Scaffold(
 
+
       appBar: AppBar(
-        title: const Text("Reminder"),
-      ),
 
-      body: Center(
-
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-
-          children: [
-
-            const Icon(
-              Icons.person,
-              size: 100,
-            ),
-
-            const SizedBox(height: 20),
-
-            Text(
-              "Welcome $username!",
-              style: const TextStyle(
-                fontSize: 28,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            const Text(
-              "This is your Reminder homepage.",
-            )
-
-          ],
+        title: const Text(
+          "Reminder",
         ),
+
+
+        actions: [
+
+
+          IconButton(
+
+            icon: const Icon(
+              Icons.person,
+            ),
+
+
+            onPressed: (){
+
+
+              Navigator.push(
+
+                context,
+
+                MaterialPageRoute(
+
+                  builder: (_) =>
+                    const UserProfile(),
+
+                ),
+
+              );
+
+
+            },
+
+          )
+
+
+        ],
+
+
       ),
+
+
+
+      body: const Center(
+
+        child: Text(
+          "Your Reminders",
+        ),
+
+      ),
+
+
     );
+
+
   }
+
+
 }

@@ -1,98 +1,77 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import 'homepage.dart';
 
-class UserLogin extends StatefulWidget {
+
+class UserLogin extends StatelessWidget {
+
   const UserLogin({super.key});
 
-  @override
-  State<UserLogin> createState() => _UserLoginState();
-}
 
-class _UserLoginState extends State<UserLogin> {
+  void login(BuildContext context) async {
 
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
 
-  String error = "";
+    final user =
+        await AuthService().signInWithGoogle();
 
-  void login() {
 
-    String username = usernameController.text;
-    String password = passwordController.text;
 
-    
-    if (username == "admin" && password == "1234") {
+    if(user != null) {
+
 
       Navigator.pushReplacement(
+
         context,
+
         MaterialPageRoute(
-          builder: (_) => HomePage(
-            username: username,
-          ),
+
+          builder: (_) => const HomePage(),
+
         ),
+
       );
 
-    } else {
-
-      setState(() {
-        error = "Incorrect username or password.";
-      });
 
     }
 
   }
 
+
+
   @override
   Widget build(BuildContext context) {
 
+
     return Scaffold(
+
       appBar: AppBar(
         title: const Text("Login"),
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(20),
 
-        child: Column(
+      body: Center(
 
-          children: [
+        child: ElevatedButton.icon(
 
-            TextField(
-              controller: usernameController,
-              decoration: const InputDecoration(
-                labelText: "Username",
-              ),
-            ),
+          icon: const Icon(Icons.login),
 
-            const SizedBox(height: 20),
+          label: const Text(
+            "Sign in with Google",
+          ),
 
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "Password",
-              ),
-            ),
 
-            const SizedBox(height: 20),
+          onPressed: () {
 
-            ElevatedButton(
-              onPressed: login,
-              child: const Text("Login"),
-            ),
+            login(context);
 
-            const SizedBox(height: 20),
+          },
 
-            Text(
-              error,
-              style: const TextStyle(
-                color: Colors.red,
-              ),
-            )
-
-          ],
         ),
+
       ),
+
     );
+
   }
+
 }
